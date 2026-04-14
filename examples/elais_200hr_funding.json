@@ -1,0 +1,46 @@
+[
+  {
+    "funder": {
+      "name": "Dutch Research Council",
+      "identifier": "https://ror.org/04jsz6e67",
+      "scheme": "ror"
+    },
+    "award": {
+    "number": "NWA.1160.18.316",
+    "title": "CORTEX (NWA-ORC programme)"
+    }
+  },
+  {
+    "funder": {
+      "name": "Dutch Research Council",
+      "identifier": "https://ror.org/04jsz6e67",
+      "scheme": "ror"
+    },
+    "award": {
+    "number": "2023.040",
+    "title": "Deep high-resolution LOFAR imaging (Computing Time on National Computing Facilities)"
+    }
+  },
+  {
+    "funder": {
+      "name": "European Commission",
+      "identifier": "https://ror.org/00k4n6c32",
+      "scheme": "ror"
+    },
+    "award": {
+      "awardNumber": "101017567",
+      "awardTitle": "EGI-ACE (Horizon 2020)"
+    }
+  },
+  {
+    "funder": {
+      "name": "European Commission",
+      "identifier": "https://ror.org/00k4n6c32",
+      "scheme": "ror"
+    },
+    "award": {
+    "awardNumber": "101129751",
+    "awardTitle": "OSCARS (Horizon Europe)"
+    }
+  }
+]

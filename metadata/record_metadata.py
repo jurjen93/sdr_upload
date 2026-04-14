@@ -3,6 +3,7 @@ from datetime import date
 from regions import Regions
 from astropy.io import fits
 from pathlib import Path
+from json import load
 
 
 def access_config():
@@ -78,13 +79,19 @@ def get_polygon_coordinates(region_file):
 def get_record_metadata(fits_file,
                     ds9_region,
                     facet_id,
-                    title):
+                    title,
+                    funding):
     """Create a record"""
 
     fits_meta = get_fits_meta(fits_file)
     pprint(fits_meta)
     polygon_ra, polygon_dec = get_polygon_coordinates(ds9_region)
     access = access_config()
+    if funding is None:
+        funding = []
+    else:
+        with open("funding.json") as f:
+            funding = load(f)
 
     today = date.today().strftime("%Y-%m-%d")
 
@@ -121,15 +128,7 @@ def get_record_metadata(fits_file,
             }
           }
         ],
-          "funding": [
-              {
-                  "funder": {
-                      "name": "OSCARS project", # TODO: Update?
-                      "identifier": "https://oscars-project.eu/projects/copli-creating-fair-open-science-pipeline-high-resolution-lofar-imaging",
-                      "scheme": "ror"
-                  }
-              }
-          ],
+          "funding": funding,
         "dates": [
           { "date": today, "type": { "id": "created" } },
           { "date": today, "type": { "id": "updated" } }
@@ -148,7 +147,7 @@ def get_record_metadata(fits_file,
           "facet_id": str(facet_id),
           "imaging_software": fits_meta["imaging_software"],
           "data_reduction_pipeline": "pilot (https://github.com/LOFAR-VLBI/pilot)",
-          "data_reduction_pipeline_commit": "282638e",
+          "data_reduction_pipeline_commit": "bb1853d",
           "wcs_equinox": fits_meta["wcs_equinox"],
           "observing_data": fits_meta["date_obs"],
           "wcs_projection": fits_meta["wcs_projection"],
@@ -157,10 +156,9 @@ def get_record_metadata(fits_file,
         "access": access,
         "contact:email": [
           "jurjendejong@strw.leidenuniv.nl",
-          "jong@astron.nl"]
+          "jong@astron.nl"],
+          "extended:discipline": "Radio Astronomy"
       }
     }
-
-    # TODO: Add related work?
 
     return metadata

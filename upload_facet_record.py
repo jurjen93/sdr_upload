@@ -8,10 +8,12 @@ def get_args():
     parser = ArgumentParser(description="Upload LOFAR-VLBI data to SURF SDR.")
 
     # Required file information
-    parser.add_argument("--fits", nargs="+", required=True, help="Path to the FITS files.")
+    parser.add_argument("--fits", nargs="+", required=True, help="Path to the FITS file(s).")
     parser.add_argument("--region", required=True, help="Path to the ds9 region file.")
+    parser.add_argument("--merged-h5", nargs="+", required=True, help="Path to h5parm solution file(s).")
     parser.add_argument("--facet-id", required=True, help="Facet ID (e.g. 1).")
     parser.add_argument("--title", required=True, help="Base title of the record. This is extended with -facet_<facet-id>.")
+    parser.add_argument("--funding", required=True, help="Json file with funding information")
 
     # Configuration
     parser.add_argument("--token", required=True, help="Path to SDR token file.")
@@ -24,14 +26,20 @@ def get_args():
     return parser.parse_args()
 
 
-def upload_record(fits_files, region, facet_id, url, add_pid, publish, title, token):
+def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish, title, token, funding):
 
-    files_to_upload = region + fits_files
+    files_to_upload = [region] + fits_files
+    if merged_h5 is not None:
+        files_to_upload.append(merged_h5)
 
     SDRsesh = UploadRecord(url, token)
 
     # Get metadata
-    metadata = get_record_metadata(fits_files[0], region, facet_id, title+f"-facet_{facet_id}")
+    metadata = get_record_metadata(fits_files[0],
+                                   region,
+                                   facet_id,
+                                   title+f"-facet_{facet_id}",
+                                   funding)
 
     # Create a record
     record = SDRsesh.create_record(metadata)
@@ -54,7 +62,16 @@ def main():
     """
 
     args = get_args()
-    upload_record(args.fits, args.region, args.facet_id, args.url, args.add_pid, args.publish, args.title, args.token)
+    upload_record(args.fits,
+                  args.region,
+                  args.merged_h5,
+                  args.facet_id,
+                  args.url,
+                  args.add_pid,
+                  args.publish,
+                  args.title,
+                  args.token,
+                  args.funding)
 
 if __name__ == "__main__":
     main()
