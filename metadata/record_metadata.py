@@ -134,6 +134,7 @@ def get_record_metadata(fits_file,
           { "date": today, "type": { "id": "updated" } }
         ]
       },
+      "access": access,
       "custom_fields": {
         "collection:metadata": {
           "telescope": "LOFAR.HBA",
@@ -153,7 +154,6 @@ def get_record_metadata(fits_file,
           "wcs_projection": fits_meta["wcs_projection"],
           "naxis": fits_meta["naxis"]
         },
-        "access": access,
         "contact:email": [
           "jurjendejong@strw.leidenuniv.nl",
           "jong@astron.nl"],
