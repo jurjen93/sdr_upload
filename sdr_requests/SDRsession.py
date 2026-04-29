@@ -195,7 +195,7 @@ class CreateCollection(UploadRecord):
 
         if response.status_code == 201:
             res = response.json()
-            print(f"Collection {metadata['title']} created successfully!")
+            print(f"Collection {metadata['metadata']['title']} created successfully!")
             print(f"ID: {res.get('id')}")
             return res
         else:
