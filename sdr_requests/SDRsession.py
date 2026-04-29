@@ -177,7 +177,10 @@ class CreateCollection(UploadRecord):
             "files": {"enabled": False},
             "metadata": metadata,
             "custom_fields": {
-                "collection:records": record_ids
+                "collection:records": record_ids,
+            "contact:email": [
+                "jurjendejong@strw.leidenuniv.nl",
+                "jong@astron.nl"]
             }
         }
 

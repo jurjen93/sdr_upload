@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
 from sdr_requests.SDRsession import CreateCollection
 from metadata.collection_metadata import collection_metadata
-from .upload_facet_record import upload_record
 
 
 def get_args():
@@ -9,10 +8,8 @@ def get_args():
     parser = ArgumentParser(description="Upload LOFAR-VLBI data to SURF SDR.")
 
     # Required file information
-    parser.add_argument("--fits", nargs="+", required=True, help="Path to the FITS file.")
-    parser.add_argument("--region", nargs="+", required=True, help="Path to the ds9 region file.")
-    parser.add_argument("--title", required=True, help="Collection title and base title of the record. "
-                                                       "Record title is extended with -facet_<facet-id>.")
+    parser.add_argument("--record_ids", nargs="+", required=True, help="Record IDs")
+    parser.add_argument("--title", required=True, help="Collection title.")
 
     # Configuration
     parser.add_argument("--token", required=True, help="Path to SDR token file.")
@@ -32,11 +29,9 @@ def main():
 
     args = get_args()
 
-    files_to_upload = args.region + args.fits
-
-    # TODO: Sort out different records
-    # TODO: Upload record
-    # TODO: Make Collection
+    metadata = collection_metadata(args.title)
+    SDRsesh = CreateCollection(args.url, args.token)
+    SDRsesh.create(metadata, args.record_ids)
 
 if __name__ == "__main__":
     main()
