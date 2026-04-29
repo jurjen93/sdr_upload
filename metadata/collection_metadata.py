@@ -12,7 +12,7 @@ def collection_metadata(title, authors):
     metadata = {
         "title": title,
         "resource_type": {"id": "collection"},
-        "creators": authors_list['creators'],
+        "creators": authors_list[0]['creators'],
         "publication_date": today
     }
 
