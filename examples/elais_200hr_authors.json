@@ -1,0 +1,16 @@
+[
+  {
+    "person_or_org": {
+      "name": "J.M.G.H.J. de Jong",
+      "type": "personal",
+      "given_name": "Jurjen",
+      "family_name": "de Jong"
+    },
+    "person_or_org": {
+      "name": "R.J. van Weeren",
+      "type": "personal",
+      "given_name": "Reinout",
+      "family_name": "van Weeren"
+    }
+  }
+]
