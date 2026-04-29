@@ -5,7 +5,6 @@ def collection_metadata(title, authors):
 
     with open(authors) as f:
         authors_list = load(f)
-    print(authors_list)
 
     today = date.today().strftime("%Y-%m-%d")
 

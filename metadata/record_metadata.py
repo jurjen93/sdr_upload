@@ -82,7 +82,8 @@ def get_record_metadata(fits_file,
                     title,
                     funding,
                     sasid,
-                    description):
+                    description,
+                    authors):
     """Create a record"""
 
     fits_meta = get_fits_meta(fits_file)
@@ -95,6 +96,9 @@ def get_record_metadata(fits_file,
         with open(funding) as f:
             funding = load(f)
 
+    with open(authors) as f:
+        authors_list = load(f)
+
     today = date.today().strftime("%Y-%m-%d")
 
     metadata = {
@@ -102,16 +106,7 @@ def get_record_metadata(fits_file,
         "resource_type": { "id": "dataset" },
         "title": title,
         "publication_date": today,
-        "creators": [
-          {
-            "person_or_org": {
-              "name": "J.M.G.H.J. de Jong",
-              "type": "personal",
-              "given_name": "J.M.G.H.J.",
-              "family_name": "de Jong"
-            }
-          }
-        ],
+        "creators": authors_list[0]['creators'],
         "subjects": [
           { "subject": "surveys" },
           { "subject": "catalogues" },
