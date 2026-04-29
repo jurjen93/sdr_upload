@@ -31,9 +31,9 @@ def main():
 
     args = get_args()
 
-    metadata = collection_metadata(args.title, args.authors, args.description)
+    metadata = collection_metadata(args.title, args.authors)
     SDRsesh = CreateCollection(args.url, args.token)
-    SDRsesh.create(metadata, args.record_ids)
+    SDRsesh.create(metadata, args.record_ids, args.description)
 
 if __name__ == "__main__":
     main()
