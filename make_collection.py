@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
 from sdr_requests.SDRsession import CreateCollection
 from metadata.collection_metadata import collection_metadata
-from json import load
 
 
 def get_args():
@@ -12,6 +11,7 @@ def get_args():
     parser.add_argument("--record_ids", nargs="+", required=True, help="Record IDs")
     parser.add_argument("--title", required=True, help="Collection title.")
     parser.add_argument("--authors", required=True, help="Authors json file")
+    parser.add_argument("--description", required=True, help="Add description to upload from input txt file.")
 
     # Configuration
     parser.add_argument("--token", required=True, help="Path to SDR token file.")
@@ -31,10 +31,7 @@ def main():
 
     args = get_args()
 
-    with open(args.authors) as f:
-        authors = load(f)
-
-    metadata = collection_metadata(args.title, authors)
+    metadata = collection_metadata(args.title, args.authors, args.description)
     SDRsesh = CreateCollection(args.url, args.token)
     SDRsesh.create(metadata, args.record_ids)
 

@@ -169,11 +169,11 @@ class CreateCollection(UploadRecord):
     def __init__(self, BASE_URL=None, TOKEN_FILE=None):
         super().__init__(BASE_URL, TOKEN_FILE)
 
-    def create(self, metadata, record_ids):
+    def create(self, metadata, record_ids, description=None):
         """Creates a collection record linking to existing record IDs."""
         api_url = f"{self.BASE_URL}/api/records"
 
-        data = {
+        metadata = {
             "files": {"enabled": False},
             "metadata": metadata,
             "custom_fields": {
@@ -184,7 +184,14 @@ class CreateCollection(UploadRecord):
             }
         }
 
-        response = requests.post(api_url, headers=self.headers, json=data, verify=False)
+        if description is not None:
+            with open(description) as f:
+                description_text = f.read()
+            metadata["metadata"].update({"description": description_text.replace("\n", " ")})
+        else:
+            metadata["metadata"].update({"description": ""})
+
+        response = requests.post(api_url, headers=self.headers, json=metadata, verify=False)
 
         if response.status_code == 201:
             res = response.json()
