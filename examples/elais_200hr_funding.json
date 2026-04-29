@@ -1,7 +1,18 @@
 [
   {
     "funder": {
-      "name": "Dutch Research Council",
+      "name": "OSCARS (European Commission)",
+      "identifier": "https://ror.org/00k4n6c32",
+      "scheme": "ror"
+    },
+    "award": {
+    "number": "101129751",
+    "title": "COPLI - Creating a FAIR Open Science Pipeline for high-resolution LOFAR Imaging "
+    }
+  },
+  {
+    "funder": {
+      "name": "Dutch Research Council (NWO)",
       "identifier": "https://ror.org/04jsz6e67",
       "scheme": "ror"
     },
@@ -12,7 +23,7 @@
   },
   {
     "funder": {
-      "name": "Dutch Research Council",
+      "name": "Dutch Research Council (NWO)",
       "identifier": "https://ror.org/04jsz6e67",
       "scheme": "ror"
     },
@@ -21,26 +32,15 @@
     "title": "Deep high-resolution LOFAR imaging (Computing Time on National Computing Facilities)"
     }
   },
-  {
+    {
     "funder": {
-      "name": "European Commission",
-      "identifier": "https://ror.org/00k4n6c32",
+      "name": "Dutch Research Council (NWO)",
+      "identifier": "https://ror.org/04jsz6e67",
       "scheme": "ror"
     },
     "award": {
-      "awardNumber": "101017567",
-      "awardTitle": "EGI-ACE (Horizon 2020)"
-    }
-  },
-  {
-    "funder": {
-      "name": "European Commission",
-      "identifier": "https://ror.org/00k4n6c32",
-      "scheme": "ror"
-    },
-    "award": {
-    "awardNumber": "101129751",
-    "awardTitle": "OSCARS (Horizon Europe)"
+    "number": "2025.043",
+    "title": "Uncovering the wide high-resolution sky with LOFAR"
     }
   }
 ]

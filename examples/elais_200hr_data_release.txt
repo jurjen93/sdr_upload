@@ -1,0 +1,6 @@
+In this data release from the LOw-Frequency ARray (LOFAR), we present 115–168 MHz images covering a 2.5 × 2.5 degree field of view centred on the ELAIS-N1 deep field. The dataset is based on 200 hours of processed LOFAR HBA observations, including international stations, obtained from 25 individual pointings.
+The data were processed using fully automated direction-dependent calibration with PILOT, producing Stokes I images.
+The field is divided into facets, representing individual patches of the full mosaic, each with its own angular resolution.
+The resulting mosaics reach resolutions of 0.36″ × 0.45″, 0.58″ × 0.62″, and 1.0″ × 1.5″, with corresponding best sensitivities of 5.6 μJy beam⁻¹, 8.0 μJy beam⁻¹, and 14.1 μJy beam⁻¹, respectively.
+We also release a source catalogue containing XXX radio sources, constructed by combining detections across the different resolutions.
+The astrometric accuracy shows a scatter of 0.017 ± 0.015″ in right ascension and 0.020 ± 0.013″ in declination.

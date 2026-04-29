@@ -12,7 +12,7 @@ def access_config():
     """
 
     access_config = {
-        "record": "restricted",  # or "public"
+        "record": "public",  # or "public"
         "files": "restricted",  # or "public"
     }
 
@@ -80,7 +80,9 @@ def get_record_metadata(fits_file,
                     ds9_region,
                     facet_id,
                     title,
-                    funding):
+                    funding,
+                    sasid,
+                    description):
     """Create a record"""
 
     fits_meta = get_fits_meta(fits_file)
@@ -90,7 +92,7 @@ def get_record_metadata(fits_file,
     if funding is None:
         funding = []
     else:
-        with open("funding.json") as f:
+        with open(funding) as f:
             funding = load(f)
 
     today = date.today().strftime("%Y-%m-%d")
@@ -99,7 +101,6 @@ def get_record_metadata(fits_file,
       "metadata": {
         "resource_type": { "id": "dataset" },
         "title": title,
-        "description": f"<DESCRIPTION>\n\nThese are the FITS files corresponding to facet {facet_id}",
         "publication_date": today,
         "creators": [
           {
@@ -143,16 +144,16 @@ def get_record_metadata(fits_file,
           "image_size": [fits_meta["naxis1"], fits_meta["naxis2"]],
           "pixel_units": fits_meta["pixel_units"],
           "pixel_scale": [abs(fits_meta['cdelt1']), abs(fits_meta['cdelt2'])],
-          "polygon_ra": ','.join([str(p) for p in polygon_ra]),
-          "polygon_dec": ','.join([str(p) for p in polygon_dec]),
+          "facet_ra": ','.join([str(p) for p in polygon_ra]),
+          "facet_dec": ','.join([str(p) for p in polygon_dec]),
           "facet_id": str(facet_id),
           "imaging_software": fits_meta["imaging_software"],
           "data_reduction_pipeline": "pilot (https://github.com/LOFAR-VLBI/pilot)",
           "data_reduction_pipeline_commit": "bb1853d",
           "wcs_equinox": fits_meta["wcs_equinox"],
-          "observing_data": fits_meta["date_obs"],
+          "date_obs": fits_meta["date_obs"],
           "wcs_projection": fits_meta["wcs_projection"],
-          "naxis": fits_meta["naxis"]
+          "naxis": fits_meta["naxis"],
         },
         "contact:email": [
           "jurjendejong@strw.leidenuniv.nl",
@@ -160,5 +161,15 @@ def get_record_metadata(fits_file,
           "extended:discipline": "Radio Astronomy"
       }
     }
+
+    if sasid:
+        metadata["custom_fields"].update({"sas_id_observations": sasid})
+
+    if description:
+        with open(description) as f:
+            description_text = f.read()
+        metadata["metadata"].update({"description": description_text.replace("\n"," ")})
+    else:
+        metadata["metadata"].update({"description": ""})
 
     return metadata

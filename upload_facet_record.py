@@ -13,7 +13,9 @@ def get_args():
     parser.add_argument("--merged-h5", nargs="+", required=True, help="Path to h5parm solution file(s).")
     parser.add_argument("--facet-id", required=True, help="Facet ID (e.g. 1).")
     parser.add_argument("--title", required=True, help="Base title of the record. This is extended with -facet_<facet-id>.")
-    parser.add_argument("--funding", required=True, help="Json file with funding information")
+    parser.add_argument("--funding", required=True, help="Json file with funding information.")
+    parser.add_argument("--sasid", required=True, help="SAS ID(s) from observations.")
+    parser.add_argument("--description", required=True, help="Add description to upload from input txt file.")
 
     # Configuration
     parser.add_argument("--token", required=True, help="Path to SDR token file.")
@@ -22,15 +24,17 @@ def get_args():
     # Actions
     parser.add_argument("--add-pid", action="store_true", help="Reserve a DOI for the record.")
     parser.add_argument("--publish", action="store_true", help="Publish the record (Draft -> Public).")
+    parser.add_argument("--create-secret-link", action="store_true", help="Create secret link")
 
     return parser.parse_args()
 
 
-def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish, title, token, funding):
+def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish, title, token, funding, sasid, description, create_secret_link):
 
     files_to_upload = [region] + fits_files
     if merged_h5 is not None:
-        files_to_upload.append(merged_h5)
+        for h5 in merged_h5:
+            files_to_upload.append(h5)
 
     SDRsesh = UploadRecord(url, token)
 
@@ -38,22 +42,20 @@ def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish
     metadata = get_record_metadata(fits_files[0],
                                    region,
                                    facet_id,
-                                   title+f"-facet_{facet_id}",
-                                   funding)
-
+                                   title,
+                                   funding,
+                                   sasid,
+                                   description)
     # Create a record
     record = SDRsesh.create_record(metadata)
-
     # Create PID for record
-    if add_pid:
-        SDRsesh.add_pid(record['id'])
-
+    if add_pid: SDRsesh.add_pid(record['id'])
     # Add files
     SDRsesh.add_files(files_to_upload, record["id"])
-
     # Publish data
-    if publish:
-        SDRsesh.publish_record(record["id"])
+    if publish: SDRsesh.publish_record(record["id"])
+    # Create secret link
+    if create_secret_link: SDRsesh.create_secret_link(record["id"])
 
 
 def main():
@@ -71,7 +73,10 @@ def main():
                   args.publish,
                   args.title,
                   args.token,
-                  args.funding)
+                  args.funding,
+                  args.sasid,
+                  args.description,
+                  args.create_secret_link)
 
 if __name__ == "__main__":
     main()
