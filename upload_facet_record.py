@@ -10,7 +10,7 @@ def get_args():
     # Required file information
     parser.add_argument("--fits", nargs="+", required=True, help="Path to the FITS file(s).")
     parser.add_argument("--region", required=True, help="Path to the ds9 region file.")
-    parser.add_argument("--merged-h5", nargs="+", required=True, help="Path to h5parm solution file(s).")
+    parser.add_argument("--merged-h5", nargs="+", help="Path to h5parm solution file(s).")
     parser.add_argument("--facet-id", required=True, help="Facet ID (e.g. 1).")
     parser.add_argument("--title", required=True, help="Base title of the record. This is extended with -facet_<facet-id>.")
     parser.add_argument("--funding", required=True, help="Json file with funding information.")
