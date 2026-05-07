@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-05-07T14:44:54.886508",
+  "repo": "/project/lofarvwf/Software/pilot",
+  "workflow": "dd-calibration.cwl",
+  "remote": "https://github.com/LOFAR-VLBI/pilot",
+  "commit": "7124d73565e8ea10c08263a09d75083ef7533d32",
+  "version": "0.9.1-37-g7124d73"
+}

@@ -83,7 +83,8 @@ def get_record_metadata(fits_file,
                     funding,
                     sasid,
                     description,
-                    authors):
+                    authors,
+                    software_version):
     """Create a record"""
 
     fits_meta = get_fits_meta(fits_file)
@@ -144,8 +145,6 @@ def get_record_metadata(fits_file,
           "image_centre_dec_deg": round(fits_meta["dec_deg"], 4),
           "facet_id": str(facet_id),
           "imaging_software": fits_meta["imaging_software"],
-          "data_reduction_pipeline": "pilot (https://github.com/LOFAR-VLBI/pilot)",
-          "data_reduction_pipeline_commit": "bb1853d",
           "wcs_equinox": fits_meta["wcs_equinox"],
           "date_obs": fits_meta["date_obs"],
           "wcs_projection": fits_meta["wcs_projection"]
@@ -166,5 +165,11 @@ def get_record_metadata(fits_file,
         metadata["metadata"].update({"description": description_text.replace("\n"," ")})
     else:
         metadata["metadata"].update({"description": ""})
+
+    if software_version is not None:
+        with open(software_version) as f:
+            data = load(f)
+            metadata['custom_fields']["collection:metadata"].update({'pipeline_version': data['version']})
+            metadata['custom_fields']["collection:metadata"].update({'pipeline': data['remote']})
 
     return metadata

@@ -13,10 +13,11 @@ def get_args():
     parser.add_argument("--merged-h5", nargs="+", help="Path to h5parm solution file(s).")
     parser.add_argument("--facet-id", required=True, help="Facet ID (e.g. 1).")
     parser.add_argument("--title", required=True, help="Base title of the record. This is extended with -facet_<facet-id>.")
-    parser.add_argument("--funding", required=True, help="Json file with funding information.")
+    parser.add_argument("--funding", required=True, help="JSON file with funding information.")
     parser.add_argument("--sasid", required=True, help="SAS ID(s) from observations.")
-    parser.add_argument("--authors", required=True, help="Authors json file")
+    parser.add_argument("--authors", required=True, help="JSON file with author information.")
     parser.add_argument("--description", required=True, help="Add description to upload from input txt file.")
+    parser.add_argument("--software-version", help="JSON with software versioning information. This can be generated with lofar_helpers (using the cwl_provenance tool)")
 
     # Configuration
     parser.add_argument("--token", required=True, help="Path to SDR token file.")
@@ -31,7 +32,7 @@ def get_args():
 
 
 def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish,
-                  title, token, funding, sasid, description, authors, create_secret_link):
+                  title, token, funding, sasid, description, authors, create_secret_link, software_version):
 
     files_to_upload = [region] + fits_files
     if merged_h5 is not None:
@@ -48,7 +49,8 @@ def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish
                                    funding,
                                    sasid,
                                    description,
-                                   authors)
+                                   authors,
+                                   software_version)
     # Create a record
     record = SDRsesh.create_record(metadata)
     # Create PID for record
@@ -80,7 +82,8 @@ def main():
                   args.sasid,
                   args.description,
                   args.authors,
-                  args.create_secret_link)
+                  args.create_secret_link,
+                  args.software_version)
 
 if __name__ == "__main__":
     main()
