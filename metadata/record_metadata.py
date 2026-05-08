@@ -4,6 +4,7 @@ from regions import Regions
 from astropy.io import fits
 from pathlib import Path
 from json import load
+from astropy.constants import c
 
 
 def access_config():
@@ -134,21 +135,29 @@ def get_record_metadata(fits_file,
       "access": access,
       "custom_fields": {
         "collection:metadata": {
-          "telescope": "LOFAR.HBA",
-          "central_freq_mhz": fits_meta["central_freq_mhz"],
-          "bandwidth_mhz": fits_meta['bandwidth_mhz'],
-          "image_size_deg": [round(fits_meta["naxis1"]*abs(fits_meta['cdelt1']), 4), round(fits_meta["naxis2"]*abs(fits_meta['cdelt1']), 4)],
-          "pixel_units": fits_meta["pixel_units"],
-          "polygon_ra_deg": [str(p) for p in polygon_ra],
-          "polygon_dec_deg": [str(p) for p in polygon_dec],
-          "image_centre_ra_deg": round(fits_meta["ra_deg"], 4),
-          "image_centre_dec_deg": round(fits_meta["dec_deg"], 4),
+          "accref": "TBD",
           "facet_id": str(facet_id),
+          "instid": "LOFAR.HBA",
+          "bandpassid": f"{int(round(fits_meta["central_freq_mhz"]-fits_meta['bandwidth_mhz']/2,0))}-"
+                        f"{int(round(fits_meta["central_freq_mhz"]+fits_meta['bandwidth_mhz']/2,0))}",
+          "bandpassrefval": c/(fits_meta["central_freq_mhz"]*1_000_000),
+          "bandpassunit": "m",
+          "bandpasshi": round(c/(round(fits_meta["central_freq_mhz"]+fits_meta['bandwidth_mhz']/2)*1_000_000), 4),
+          "bandpasslo": round(c / (round(fits_meta["central_freq_mhz"]-fits_meta['bandwidth_mhz']/2)*1_000_000), 4),
+          "imsize": [round(fits_meta["naxis1"]*abs(fits_meta['cdelt1']), 4), round(fits_meta["naxis2"]*abs(fits_meta['cdelt1']), 4)],
+          "poly_ra": [str(p) for p in polygon_ra],
+          "poly_dec": [str(p) for p in polygon_dec],
+          "centeralpha": round(fits_meta["ra_deg"], 4),
+          "centerdelta": round(fits_meta["dec_deg"], 4),
+          "pixunits": fits_meta["pixel_units"],
           "imaging_software": fits_meta["imaging_software"],
           "wcs_equinox": fits_meta["wcs_equinox"],
-          "date_obs": fits_meta["date_obs"],
-          "wcs_projection": fits_meta["wcs_projection"]
-        },
+          "wcs_projection": fits_meta["wcs_projection"],
+          "refframe": "ICRS",
+          "datafirstobs": fits_meta["date_obs"],
+          "datelastobs": fits_meta["date_obs"],
+          "related_products": "TBD"
+    },
         "contact:email": [
           "jurjendejong@strw.leidenuniv.nl",
           "jong@astron.nl"],
@@ -157,7 +166,7 @@ def get_record_metadata(fits_file,
     }
 
     if sasid:
-        metadata["custom_fields"].update({"sas_id_observations": sasid})
+        metadata["custom_fields"]["collection:metadata"].update({"sasids": sasid})
 
     if description:
         with open(description) as f:
