@@ -89,7 +89,6 @@ def get_record_metadata(fits_file,
     """Create a record"""
 
     fits_meta = get_fits_meta(fits_file)
-    pprint(fits_meta)
     polygon_ra, polygon_dec = get_polygon_coordinates(ds9_region)
     access = access_config()
     if funding is None:
@@ -139,18 +138,17 @@ def get_record_metadata(fits_file,
           "facet_id": str(facet_id),
           "instid": "LOFAR.HBA",
           "bandpassid": f"{int(round(fits_meta["central_freq_mhz"]-fits_meta['bandwidth_mhz']/2,0))}-"
-                        f"{int(round(fits_meta["central_freq_mhz"]+fits_meta['bandwidth_mhz']/2,0))}",
-          "bandpassrefval": c/(fits_meta["central_freq_mhz"]*1_000_000),
+                        f"{int(fits_meta["central_freq_mhz"]+fits_meta['bandwidth_mhz']/2+1)}",
+          "bandpassrefval": c.value/(fits_meta["central_freq_mhz"]*1_000_000),
           "bandpassunit": "m",
-          "bandpasshi": round(c/(round(fits_meta["central_freq_mhz"]+fits_meta['bandwidth_mhz']/2)*1_000_000), 4),
-          "bandpasslo": round(c / (round(fits_meta["central_freq_mhz"]-fits_meta['bandwidth_mhz']/2)*1_000_000), 4),
+          "bandpasshi": round(c.value/(round(fits_meta["central_freq_mhz"]+fits_meta['bandwidth_mhz']/2)*1_000_000), 4),
+          "bandpasslo": round(c.value / (round(fits_meta["central_freq_mhz"]-fits_meta['bandwidth_mhz']/2)*1_000_000), 4),
           "imsize": [round(fits_meta["naxis1"]*abs(fits_meta['cdelt1']), 4), round(fits_meta["naxis2"]*abs(fits_meta['cdelt1']), 4)],
           "poly_ra": [str(p) for p in polygon_ra],
           "poly_dec": [str(p) for p in polygon_dec],
           "centeralpha": round(fits_meta["ra_deg"], 4),
           "centerdelta": round(fits_meta["dec_deg"], 4),
           "pixunits": fits_meta["pixel_units"],
-          "imaging_software": fits_meta["imaging_software"],
           "wcs_equinox": fits_meta["wcs_equinox"],
           "wcs_projection": fits_meta["wcs_projection"],
           "refframe": "ICRS",
@@ -180,5 +178,6 @@ def get_record_metadata(fits_file,
             data = load(f)
             metadata['custom_fields']["collection:metadata"].update({'pipeline_version': data['version']})
             metadata['custom_fields']["collection:metadata"].update({'pipeline': data['remote']})
+    pprint(metadata)
 
     return metadata
