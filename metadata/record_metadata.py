@@ -134,8 +134,9 @@ def get_record_metadata(fits_file,
       "access": access,
       "custom_fields": {
         "collection:metadata": {
+          "$schema": "https://repository.surf.nl/schema/lofar-en1-hd",
           "accref": "TBD",
-          "facet_id": str(facet_id),
+          "facet_id": int(facet_id),
           "instid": "LOFAR.HBA",
           "bandpassid": f"{int(round(fits_meta["central_freq_mhz"]-fits_meta['bandwidth_mhz']/2,0))}-"
                         f"{int(fits_meta["central_freq_mhz"]+fits_meta['bandwidth_mhz']/2+1)}",
@@ -152,7 +153,7 @@ def get_record_metadata(fits_file,
           "wcs_equinox": fits_meta["wcs_equinox"],
           "wcs_projection": fits_meta["wcs_projection"],
           "refframe": "ICRS",
-          "datafirstobs": fits_meta["date_obs"],
+          "datefirstobs": fits_meta["date_obs"],
           "datelastobs": fits_meta["date_obs"],
           "related_products": "TBD"
     },

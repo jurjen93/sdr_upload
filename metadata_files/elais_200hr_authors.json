@@ -11,6 +11,14 @@
       },
       {
         "person_or_org": {
+          "name": "L.K. Morabito",
+          "type": "personal",
+          "given_name": "L.K.",
+          "family_name": "Morabito"
+        }
+      },
+      {
+        "person_or_org": {
           "name": "R.J. van Weeren",
           "type": "personal",
           "given_name": "R.J.",
