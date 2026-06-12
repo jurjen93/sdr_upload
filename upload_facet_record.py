@@ -32,7 +32,7 @@ def get_args():
 
 
 def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish,
-                  title, token, funding, sasid, description, authors, create_secret_link, software_version):
+                  title, token, funding, sasid, description, authors, software_version):
 
     files_to_upload = [region] + fits_files
     if merged_h5 is not None:
@@ -80,7 +80,6 @@ def main():
                   args.sasid,
                   args.description,
                   args.authors,
-                  args.create_secret_link,
                   args.software_version)
 
 if __name__ == "__main__":
