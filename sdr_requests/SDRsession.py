@@ -9,7 +9,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class UploadRecord:
     def __init__(self, BASE_URL=None, TOKEN_FILE=None):
 
-        self.BASE_URL = BASE_URL if BASE_URL is None else "https://sdr-acc.repository.surf.nl"
+        self.BASE_URL = "https://sdr-acc.repository.surf.nl" if BASE_URL is None else BASE_URL
 
         with open(TOKEN_FILE) as f:
             self.headers = {"Authorization": f"Bearer {f.read().strip()}",
