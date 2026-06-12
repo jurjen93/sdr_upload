@@ -1,7 +1,10 @@
-In this data release from the LOw-Frequency ARray (LOFAR), we present sub-arcsecond resolution images and source catalogues covering a 2.5 × 2.5 degree field of view centred on the ELAIS-N1 deep field at 115–168 MHz.
-The dataset is based on 200 hours of processed LOFAR HBA observations, including international stations, obtained from 25 individual pointings.
-The data were processed using fully automated direction-dependent calibration with PILOT, producing primary-beam corrected Stokes I images with WSClean.
-The field is divided into facets, representing individual patches of the full mosaic, each with their own angular resolution.
+In this data release from the LOw-Frequency ARray (LOFAR), we present sub-arcsecond resolution images and source catalogues
+covering a 2.5 × 2.5 degree field of view centred on the ELAIS-N1 deep field at 115–168 MHz.
+The output data corresponds to 200 hours of processed LOFAR HBA observations, including international stations, obtained from 25 epochs.
+The processing was done using fully automated direction-dependent calibration with PILOT, producing primary-beam corrected Stokes I images with WSClean.
 The resulting mosaics reach resolutions of 0.36″×0.45″, 0.58″×0.62″, and 1.0″×1.5″, with corresponding best sensitivities of 5.6 μJy beam⁻¹, 8.0 μJy beam⁻¹, and 14.1 μJy beam⁻¹, respectively.
-We also release a source catalogue, created with PyBDSF, containing XXX radio sources, constructed by combining detections across the different resolutions.
-The astrometry has an accuracy of 0.00 ± 0.029″ in right ascension and 0.00 ± 0.028″ in declination.
+The astrometry has an accuracy of -3±29 mas in right ascension and 2±28 mas in declination.
+We also release a source catalogue, created with PyBDSF and based on the facet images. This contains XXX radio sources, constructed by combining detections across the different resolutions.
+For science we highly recommend using the facet images, representing individual patches of the full mosaics, each with their own angular resolution.
+
+Below you find data from XXX...
