@@ -53,7 +53,6 @@ def get_fits_meta(fits_path):
         "naxis": int(header.get("NAXIS")),
         "naxis1": int(header.get("NAXIS1")),
         "naxis2": int(header.get("NAXIS2")),
-        "bpa_deg": float(round(header.get("BPA"), 2)),
         "cdelt1": cdelt1,
         "cdelt2": cdelt2,
         "pixel_units": str(header.get("BUNIT")),
