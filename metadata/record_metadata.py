@@ -149,7 +149,7 @@ def get_record_metadata(fits_file,
         "collection:metadata": {
           "$schema": "https://repository.surf.nl/schema/lofar-en1-hd",
           "accref": "TBD",
-          "facet_id": int(facet_id),
+          "facet_id": int(facet_id) if facet_id.isdigit() else facet_id,
           "instid": "LOFAR.HBA",
           "bandpassid": f"{int(round(fits_meta["central_freq_mhz"]-fits_meta['bandwidth_mhz']/2,0))}-"
                         f"{int(fits_meta["central_freq_mhz"]+fits_meta['bandwidth_mhz']/2+1)}",
