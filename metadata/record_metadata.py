@@ -1,10 +1,12 @@
 from pprint import pprint
 from datetime import date
 from regions import Regions
+from regions import PolygonSkyRegion, RectangleSkyRegion
 from astropy.io import fits
 from pathlib import Path
 from json import load
 from astropy.constants import c
+import sys
 
 
 def access_config():
@@ -30,6 +32,15 @@ def get_fits_meta(fits_path):
     with fits.open(fits_path) as hdul:
         header = hdul[0].header
 
+    cdelt1 = header.get("CDELT1")
+    cdelt2 = header.get("CDELT2")
+
+    if cdelt1 is None:
+        cdelt1 = header.get("CD1_1")
+
+    if cdelt2 is None:
+        cdelt2 = header.get("CD2_2")
+
     metadata = {
         "filename": fits_path.name,
         "telescope": header.get("TELESCOP"),
@@ -42,11 +53,9 @@ def get_fits_meta(fits_path):
         "naxis": int(header.get("NAXIS")),
         "naxis1": int(header.get("NAXIS1")),
         "naxis2": int(header.get("NAXIS2")),
-        "bmaj_arcsec": float(round(header.get("BMAJ") * 3600, 2)),
-        "bmin_arcsec": float(round(header.get("BMIN") * 3600, 2)),
         "bpa_deg": float(round(header.get("BPA"), 2)),
-        "cdelt1": float(header.get("CDELT1")),
-        "cdelt2": float(header.get("CDELT2")),
+        "cdelt1": cdelt1,
+        "cdelt2": cdelt2,
         "pixel_units": str(header.get("BUNIT")),
         "imaging_software": header.get("ORIGIN"),
         "wcs_equinox": str(header.get("EQUINOX")),
@@ -71,8 +80,13 @@ def get_polygon_coordinates(region_file):
     """
 
     reg = Regions.read(region_file)
-    ra = reg[0].vertices.ra.value
-    dec = reg[0].vertices.dec.value
+
+    if isinstance(reg, PolygonSkyRegion):
+        ra, dec = reg.vertices.ra.value, reg.vertices.dec.value
+    elif isinstance(reg, RectangleSkyRegion):
+        ra, dec = ["N/A"], ["N/A"]
+    else:
+        sys.exit("ERROR region_file {region_file} has unknown type")
 
     return ra, dec
 

@@ -11,6 +11,8 @@ def get_args():
     parser.add_argument("--fits", nargs="+", required=True, help="Path to the FITS file(s).")
     parser.add_argument("--region", required=True, help="Path to the ds9 region file.")
     parser.add_argument("--merged-h5", nargs="+", help="Path to h5parm solution file(s).")
+    parser.add_argument("--upload_only_other_files", action="store_true", help="Use FITS file only for metadata")
+    parser.add_argument("--other_files", nargs="+", help="Use FITS file only for metadata")
     parser.add_argument("--facet-id", required=True, help="Facet ID (e.g. 1).")
     parser.add_argument("--title", required=True, help="Base title of the record. This is extended with -facet_<facet-id>.")
     parser.add_argument("--funding", required=True, help="JSON file with funding information.")
@@ -31,12 +33,17 @@ def get_args():
 
 
 def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish,
-                  title, token, funding, sasid, description, authors, software_version):
+                  title, token, funding, sasid, description, authors, software_version, upload_only_other_files,
+                  other_files):
 
-    files_to_upload = [region] + fits_files
-    if merged_h5 is not None:
-        for h5 in merged_h5:
-            files_to_upload.append(h5)
+
+    if upload_only_other_files:
+        files_to_upload = other_files
+    else:
+        files_to_upload = [region] + fits_files
+        if merged_h5 is not None:
+            for h5 in merged_h5:
+                files_to_upload.append(h5)
 
     SDRsesh = UploadRecord(url, token)
 
@@ -79,7 +86,9 @@ def main():
                   args.sasid,
                   args.description,
                   args.authors,
-                  args.software_version)
+                  args.software_version,
+                  args.upload_only_other_files,
+                  args.other_files)
 
 if __name__ == "__main__":
     main()
