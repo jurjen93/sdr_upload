@@ -78,14 +78,14 @@ def get_polygon_coordinates(region_file):
     coords : list of tuples
     """
 
-    reg = Regions.read(region_file)
+    reg = Regions.read(region_file)[0]
 
     if isinstance(reg, PolygonSkyRegion):
         ra, dec = reg.vertices.ra.value, reg.vertices.dec.value
     elif isinstance(reg, RectangleSkyRegion):
         ra, dec = ["N/A"], ["N/A"]
     else:
-        sys.exit("ERROR region_file {region_file} has unknown type")
+        sys.exit(f"ERROR region_file {region_file} has unknown type")
 
     return ra, dec
 
