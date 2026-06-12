@@ -6,7 +6,11 @@
           "name": "J.M.G.H.J. de Jong",
           "type": "personal",
           "given_name": "J.M.G.H.J.",
-          "family_name": "de Jong"
+          "family_name": "de Jong",
+          "identifiers": [{
+            "scheme": "orcid",
+            "identifier": "0000-0001-6876-8719"
+      }]
         }
       },
       {

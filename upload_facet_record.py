@@ -18,6 +18,7 @@ def get_args():
     parser.add_argument("--authors", required=True, help="JSON file with author information.")
     parser.add_argument("--description", required=True, help="Add description to upload from input txt file.")
     parser.add_argument("--software-version", help="JSON with software versioning information. This can be generated with lofar_helpers (using the cwl_provenance tool)")
+    parser.add_argument("--software-version", help="JSON with software versioning information. This can be generated with lofar_helpers (using the cwl_provenance tool)")
 
     # Configuration
     parser.add_argument("--token", required=True, help="Path to SDR token file.")
@@ -26,7 +27,6 @@ def get_args():
     # Actions
     parser.add_argument("--add-pid", action="store_true", help="Reserve a DOI for the record.")
     parser.add_argument("--publish", action="store_true", help="Publish the record (Draft -> Public).")
-    parser.add_argument("--create-secret-link", action="store_true", help="Create secret link")
 
     return parser.parse_args()
 
@@ -59,8 +59,6 @@ def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish
     SDRsesh.add_files(files_to_upload, record["id"])
     # Publish data
     if publish: SDRsesh.publish_record(record["id"])
-    # Create secret link
-    if create_secret_link: SDRsesh.create_secret_link(record["id"])
 
 
 def main():

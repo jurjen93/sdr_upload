@@ -2,6 +2,7 @@ import requests
 import json
 from os import path
 import urllib3
+import sys
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -28,8 +29,7 @@ class UploadRecord:
             draft = response.json()
             return draft
         else:
-            print(f"Error: {response.status_code} - {response.text}")
-            return None
+            sys.exit(f"Error: {response.status_code} - {response.text}")
 
     def add_pid(self, record_id):
         """Add a PID to record"""
@@ -112,57 +112,6 @@ class UploadRecord:
         print(f"Permanent URL: {published_record['links']['self_html']}")
 
         return published_record
-
-    def create_secret_link(self, record_id, permission="view", expires_at=None):
-        """
-        FROM: https://servicedesk.surf.nl/wiki/spaces/WIKI/pages/269649032/Sharing+draft+records+with+invenio+using+the+API#SharingdraftrecordswithinveniousingtheAPI-CreateaSecretLink
-        Create a secret link for a draft.
-
-        Args:
-            record_id: The ID of the record
-            permission: "view" or "edit"
-            expires_at: Optional expiration datetime (ISO format)
-
-        Returns:
-            Dict with link information including the token
-        """
-
-        link_data = {
-            "permission": permission
-        }
-
-        # Add expiration if provided
-        if expires_at:
-            link_data["expires_at"] = expires_at
-
-        response = requests.post(
-            f"{self.BASE_URL}/api/records/{record_id}/draft/access/links",
-            headers=self.headers,
-            data=json.dumps(link_data)
-        )
-
-        if response.status_code == 201:
-            link_info = response.json()
-            token = link_info.get("token")
-
-            # Construct the shareable URL
-            share_url = f"{self.BASE_URL}/uploads/{record_id}?token={token}"
-            print(share_url)
-
-            print(f"Secret link created!")
-            print(f"Share URL: {share_url}")
-            print(f"Token: {token}")
-            print(f"Permission: {permission}")
-
-            return {
-                "token": token,
-                "share_url": share_url,
-                "permission": permission,
-                "link_info": link_info
-            }
-        else:
-            print(f"Error creating link: {response.status_code} - {response.text}")
-            return None
 
 
 class CreateCollection(UploadRecord):
