@@ -36,14 +36,14 @@ def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish
                   title, token, funding, sasid, description, authors, software_version, upload_only_other_files,
                   other_files):
 
-
-    if upload_only_other_files:
-        files_to_upload = other_files
-    else:
-        files_to_upload = [region] + fits_files
+    files_to_upload = []
+    if not upload_only_other_files:
+        files_to_upload += [region] + fits_files
         if merged_h5 is not None:
             for h5 in merged_h5:
                 files_to_upload.append(h5)
+    if other_files is not None:
+        files_to_upload += other_files
 
     SDRsesh = UploadRecord(url, token)
 
