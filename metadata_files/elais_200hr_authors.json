@@ -18,7 +18,11 @@
           "name": "L.K. Morabito",
           "type": "personal",
           "given_name": "L.K.",
-          "family_name": "Morabito"
+          "family_name": "Morabito",
+          "identifiers": [{
+            "scheme": "orcid",
+            "identifier": "0000-0003-0487-6651"
+      }]
         }
       },
       {
@@ -26,7 +30,11 @@
           "name": "R.J. van Weeren",
           "type": "personal",
           "given_name": "R.J.",
-          "family_name": "van Weeren"
+          "family_name": "van Weeren",
+          "identifiers": [{
+            "scheme": "orcid",
+            "identifier": "0000-0002-0587-1660"
+      }]
         }
       }
     ]
