@@ -1,9 +1,8 @@
-In this data release from the LOw-Frequency ARray (LOFAR), we present sub-arcsecond resolution images and source catalogues
-covering a 2.5 × 2.5 degree field of view centred on the ELAIS-N1 deep field at 115–168 MHz.
-The output data corresponds to 200 hours of processed LOFAR HBA observations, including international stations, obtained from 25 epochs.
-The processing was done using fully automated direction-dependent calibration with PILOT, producing primary-beam corrected Stokes I images with WSClean.
-The resulting mosaics reach resolutions of 0.36″×0.45″, 0.58″×0.62″, and 1.0″×1.5″, with corresponding best sensitivities of 5.6 μJy beam⁻¹, 8.0 μJy beam⁻¹, and 14.1 μJy beam⁻¹, respectively.
-We also release a source catalogue, created with PyBDSF and based on the facet images. This contains XXX radio sources, constructed by combining detections across the different resolutions.
-For science we strongly recommend using the individual facet images, representing individual patches of the full mosaics, each with their own angular resolution.
+In this data release, we present ultra-deep sub-arcsecond resolution images and source catalogues at 115–168 MHz
+covering a 2.5×2.5 square degree field of view centred on the ELAIS-N1 deep field.
+The data has been produced using 200 hours of LOFAR-HBA observations, including all international stations, obtained from 25 epochs.
+The resulting mosaics have resolutions of 0.36″×0.45″, 0.58″×0.62″, and 1.0″×1.5″, with corresponding best sensitivities of 5.6 μJy beam⁻¹, 8.0 μJy beam⁻¹, and 14.1 μJy beam⁻¹, respectively.
+We also release a source catalogue containing XXX radio sources. This catalogue combines detections in the facet images across the different resolutions.
+For science, we recommend using the individual facet images. These are smaller regions from the full mosaic, where each facet has its own angular resolution.
 
 Below you find data from XXX...
