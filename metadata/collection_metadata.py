@@ -19,7 +19,8 @@ def collection_metadata(title, authors, funding):
         "resource_type": {"id": "collection"},
         "creators": authors_list[0]['creators'],
         "publication_date": today,
-        "funding": funding
+        "funding": funding,
+        "publisher": "Leiden Observatory"
     }
 
     return metadata
