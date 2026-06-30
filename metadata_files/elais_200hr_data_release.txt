@@ -1,6 +1,7 @@
 In this data release, we present ultra-deep sub-arcsecond resolution images and source catalogues at 115–168 MHz
 covering a 2.5×2.5 square degree field of view centred on the ELAIS-N1 deep field.
 The data has been produced using 200 hours of LOFAR-HBA observations, including all international stations, obtained from 25 epochs.
+The data were processed using the automated direction-dependent calibration pipelines LINC, the DDF-pipeline, and PILOT, followed by imaging with WSClean to produce primary beam-corrected Stokes I images.
 The resulting mosaics have resolutions of 0.36″×0.45″, 0.58″×0.62″, and 1.0″×1.5″, with corresponding best sensitivities of 5.6 μJy beam⁻¹, 8.0 μJy beam⁻¹, and 14.1 μJy beam⁻¹, respectively.
 We also release a source catalogue containing XXX radio sources. This catalogue combines detections in the facet images across the different resolutions.
 For science, we recommend using the individual facet images. These are smaller regions from the full mosaic, where each facet has its own angular resolution.

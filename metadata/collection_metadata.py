@@ -1,7 +1,13 @@
 from datetime import date
 from json import load
 
-def collection_metadata(title, authors):
+def collection_metadata(title, authors, funding):
+
+    if funding is None:
+        funding = []
+    else:
+        with open(funding) as f:
+            funding = load(f)
 
     with open(authors) as f:
         authors_list = load(f)
@@ -12,7 +18,8 @@ def collection_metadata(title, authors):
         "title": title,
         "resource_type": {"id": "collection"},
         "creators": authors_list[0]['creators'],
-        "publication_date": today
+        "publication_date": today,
+        "funding": funding
     }
 
     return metadata

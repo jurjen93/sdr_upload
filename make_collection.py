@@ -12,6 +12,7 @@ def get_args():
     parser.add_argument("--title", required=True, help="Collection title.")
     parser.add_argument("--authors", required=True, help="Authors json file")
     parser.add_argument("--description", required=True, help="Add description to upload from input txt file.")
+    parser.add_argument("--funding", required=True, help="JSON file with funding information.")
 
     # Configuration
     parser.add_argument("--token", required=True, help="Path to SDR token file.")
@@ -31,7 +32,7 @@ def main():
 
     args = get_args()
 
-    metadata = collection_metadata(args.title, args.authors)
+    metadata = collection_metadata(args.title, args.authors, args.funding)
     SDRsesh = CreateCollection(args.url, args.token)
     SDRsesh.create(metadata, args.record_ids, args.description)
 
