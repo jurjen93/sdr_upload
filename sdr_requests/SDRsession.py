@@ -31,6 +31,16 @@ class UploadRecord:
         else:
             sys.exit(f"Error: {response.status_code} - {response.text}")
 
+    def get_record(self, record_id):
+        """Fetch a record (published or draft) by ID."""
+        r = requests.get(
+            f"{self.BASE_URL}/api/records/{record_id}",
+            headers=self.headers,
+            verify=False
+        )
+        r.raise_for_status()
+        return r.json()
+
     def new_version(self, record_id):
         """
         Create a new draft version linked to an existing published record.

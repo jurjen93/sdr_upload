@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from sdr_requests.SDRsession import UploadRecord
 from metadata.record_metadata import get_record_metadata
+from datetime import date
 
 
 def get_args():
@@ -63,11 +64,23 @@ def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish
                                    authors,
                                    software_version)
     if new_version_of:
+        # Fetch the original record to preserve its creation date
+        original = SDRsesh.get_record(new_version_of)
+        original_created = next(
+            (d["date"] for d in original["metadata"].get("dates", [])
+             if d["type"]["id"] == "created"),
+            None
+        )
+
+        if original_created:
+            metadata["metadata"]["dates"] = [
+                {"date": original_created, "type": {"id": "created"}},
+                {"date": date.today().strftime("%Y-%m-%d"), "type": {"id": "updated"}}
+            ]
+
         # Create a new draft version linked to the existing record
         record = SDRsesh.new_version(new_version_of)
 
-        # Build the update payload: reuse the freshly generated metadata,
-        # but keep the files.enabled flag from the new draft
         payload = dict(metadata)
         payload["files"] = {"enabled": record["files"]["enabled"]}
 
