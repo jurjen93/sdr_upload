@@ -10,17 +10,17 @@ def get_args():
     parser.add_argument("--description", required=True, help="Path to the new description .txt file.")
     parser.add_argument("--token", required=True, help="Path to SDR token file.")
     parser.add_argument("--url", default="https://sdr-acc.repository.surf.nl", help="Base URL for the SDR instance.")
-
+    parser.add_argument('--extra-text', help='Add extra text to the record')
     return parser.parse_args()
 
 
-def load_description_html(description_path, facet_id=None):
+def load_description_html(description_path, facet_id=None, extra_text=None):
     with open(description_path) as f:
         text = f.read().strip()
 
     paragraphs = [p.strip().replace("\n", " ") for p in text.split("\n\n") if p.strip()]
 
-    if facet_id is not None:
+    if facet_id is not None and facet_id!="N/A":
         facet_text = (
             f"Below you find the dirty, model, residual, RMS, PSF, and primary-beam "
             f"corrected Stokes-I images from <strong>facet {facet_id}</strong> at "
@@ -28,10 +28,13 @@ def load_description_html(description_path, facet_id=None):
         )
         paragraphs.append(facet_text)
 
+    if extra_text is not None:
+        paragraphs.append(extra_text)
+
     return "".join(f"<p>{p}</p>" for p in paragraphs)
 
 
-def update_description(record_id, description_path, token, url):
+def update_description(record_id, description_path, token, url, extra_text):
     SDRsesh = UploadRecord(url, token)
 
     # Check current state of the record to decide whether we need to open a draft first
@@ -51,7 +54,7 @@ def update_description(record_id, description_path, token, url):
                     .get("collection:metadata", {}) \
                     .get("facet_id")
     print(f"FACET {facet_id}")
-    new_description = load_description_html(description_path, facet_id)
+    new_description = load_description_html(description_path, facet_id, extra_text)
     draft["metadata"]["description"] = new_description
 
     payload = {
@@ -72,7 +75,8 @@ def main():
     update_description(args.record_id,
                        args.description,
                        args.token,
-                       args.url)
+                       args.url,
+                       args.extra_text)
 
 
 if __name__ == "__main__":
