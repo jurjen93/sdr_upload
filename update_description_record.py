@@ -20,7 +20,7 @@ def load_description_html(description_path, facet_id=None):
 
     paragraphs = [p.strip().replace("\n", " ") for p in text.split("\n\n") if p.strip()]
 
-    if facet_id:
+    if facet_id is not None:
         facet_text = (
             f"Below you find the dirty, model, residual, RMS, PSF, and primary-beam "
             f"corrected Stokes-I images from <strong>facet {facet_id}</strong> at "
