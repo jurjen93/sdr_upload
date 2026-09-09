@@ -61,6 +61,18 @@ class UploadRecord:
 
         return new_draft
 
+    def edit_published_record(self, record_id):
+        """
+        Open an edit-draft of an already-published record.
+        """
+        r = requests.post(
+            f"{self.BASE_URL}/api/records/{record_id}/draft",
+            headers=self.headers,
+            verify=False
+        )
+        r.raise_for_status()
+        return r.json()
+
     def update_metadata(self, record_id, metadata):
         """
         Update metadata on a draft (e.g. the new version draft).

@@ -63,6 +63,7 @@ def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish
                                    description,
                                    authors,
                                    software_version)
+
     if new_version_of:
         # Fetch the original record to preserve its creation date
         original = SDRsesh.get_record(new_version_of)
