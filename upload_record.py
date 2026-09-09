@@ -21,6 +21,11 @@ def get_args():
     parser.add_argument("--description", required=True, help="Add description to upload from input txt file.")
     parser.add_argument("--software-version", help="JSON with software versioning information. This can be generated with lofar_helpers (using the cwl_provenance tool)")
 
+    # Versioning
+    parser.add_argument("--new-version-of", default=None,
+                        help="Record ID of an existing published record. If given, creates a new version "
+                             "of that record instead of a brand new record.")
+
     # Configuration
     parser.add_argument("--token", required=True, help="Path to SDR token file.")
     parser.add_argument("--url", default="https://sdr-acc.repository.surf.nl", help="Base URL for the SDR instance.")
@@ -34,7 +39,7 @@ def get_args():
 
 def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish,
                   title, token, funding, sasid, description, authors, software_version, upload_only_other_files,
-                  other_files):
+                  other_files, new_version_of):
 
     files_to_upload = []
     if not upload_only_other_files:
@@ -57,8 +62,20 @@ def upload_record(fits_files, region, merged_h5, facet_id, url, add_pid, publish
                                    description,
                                    authors,
                                    software_version)
-    # Create a record
-    record = SDRsesh.create_record(metadata)
+    if new_version_of:
+        # Create a new draft version linked to the existing record
+        record = SDRsesh.new_version(new_version_of)
+
+        # Build the update payload: reuse the freshly generated metadata,
+        # but keep the files.enabled flag from the new draft
+        payload = dict(metadata)
+        payload["files"] = {"enabled": record["files"]["enabled"]}
+
+        record = SDRsesh.update_metadata(record["id"], payload)
+    else:
+        # Create a brand new record
+        record = SDRsesh.create_record(metadata)
+
     # Create PID for record
     if add_pid: SDRsesh.add_pid(record['id'])
     # Add files
@@ -88,7 +105,8 @@ def main():
                   args.authors,
                   args.software_version,
                   args.upload_only_other_files,
-                  args.other_files)
+                  args.other_files,
+                  args.new_version_of)
 
 if __name__ == "__main__":
     main()

@@ -31,6 +31,39 @@ class UploadRecord:
         else:
             sys.exit(f"Error: {response.status_code} - {response.text}")
 
+    def new_version(self, record_id):
+        """
+        Create a new draft version linked to an existing published record.
+        Returns the new draft (with its own record id, but the same parent).
+        """
+        print(f"Creating new version from record {record_id}...")
+
+        r = requests.post(
+            f"{self.BASE_URL}/api/records/{record_id}/versions",
+            headers=self.headers,
+            verify=False
+        )
+        r.raise_for_status()
+
+        new_draft = r.json()
+        print(f"New draft version created: {new_draft['id']}")
+        print(f"(Parent/concept id: {new_draft['parent']['id']})")
+
+        return new_draft
+
+    def update_metadata(self, record_id, metadata):
+        """
+        Update metadata on a draft (e.g. the new version draft).
+        """
+        r = requests.put(
+            f"{self.BASE_URL}/api/records/{record_id}/draft",
+            headers=self.headers,
+            data=json.dumps(metadata),
+            verify=False
+        )
+        r.raise_for_status()
+        return r.json()
+
     def add_pid(self, record_id):
         """Add a PID to record"""
 
