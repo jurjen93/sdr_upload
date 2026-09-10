@@ -3,6 +3,7 @@ import json
 from os import path
 import urllib3
 import sys
+import time
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -98,55 +99,101 @@ class UploadRecord:
 
         print("Reserved DOI -> ", draft_record["pids"]["doi"]["identifier"])
 
-    def add_files(self, file_list, record_id):
+    def add_files(self, file_list, record_id, max_retries=5, backoff_base=15,
+                  connect_timeout=30, read_timeout=3600):
         """
         Initialize and upload multiple files for a single record.
+        Retries transient network failures with exponential backoff, and skips
+        files that are already fully committed on the draft (resume support).
         """
+        timeout = (connect_timeout, read_timeout)
 
-        init_data = [{"key": path.basename(f)} for f in file_list]
+        already_done = set()
+        r = requests.get(
+            f"{self.BASE_URL}/api/records/{record_id}/draft/files",
+            headers=self.headers,
+            verify=False
+        )
+        if r.status_code == 200:
+            for entry in r.json().get("entries", []):
+                if entry.get("status") == "completed":
+                    already_done.add(entry["key"])
 
-        print(f"Initializing {len(file_list)} files...")
+        remaining = [f for f in file_list if path.basename(f) not in already_done]
+        skipped = [f for f in file_list if path.basename(f) in already_done]
+        if skipped:
+            print(f"Skipping {len(skipped)} already-uploaded file(s): "
+                  f"{[path.basename(f) for f in skipped]}")
+
+        if not remaining:
+            print("All files already uploaded.")
+            return
+
+        # --- Initialize remaining files ---
+        init_data = [{"key": path.basename(f)} for f in remaining]
+
+        print(f"Initializing {len(remaining)} file(s)...")
         r = requests.post(
             f"{self.BASE_URL}/api/records/{record_id}/draft/files",
             json=init_data,
             verify=False,
-            headers=self.headers
+            headers=self.headers,
+            timeout=timeout
         )
         r.raise_for_status()
-
-        # Get the response
         response_data = r.json()
 
-        for file_path in file_list:
+        for file_path in remaining:
             file_key = path.basename(file_path)
-
-            # Find the links for this specific file key from the response
             file_entry = next(e for e in response_data['entries'] if e['key'] == file_key)
             url_content = file_entry['links']['content']
             url_commit = file_entry['links']['commit']
 
-            # Uploading
             upload_headers = self.headers.copy()
             upload_headers["Content-Type"] = "application/octet-stream"
 
-            print(f"Uploading: {file_key}...")
-            with open(file_path, 'rb') as f:
-                r_upload = requests.put(
-                    url_content,
-                    headers=upload_headers,
-                    data=f,
-                    verify=False
-                )
-            r_upload.raise_for_status()
+            # --- Upload content, with retry/backoff ---
+            for attempt in range(1, max_retries + 1):
+                try:
+                    print(f"Uploading: {file_key} (attempt {attempt}/{max_retries})...")
+                    with open(file_path, 'rb') as f:
+                        r_upload = requests.put(
+                            url_content,
+                            headers=upload_headers,
+                            data=f,
+                            verify=False,
+                            timeout=timeout
+                        )
+                    r_upload.raise_for_status()
+                    break
+                except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+                    print(f"  Upload failed: {e}")
+                    if attempt == max_retries:
+                        raise
+                    sleep_time = backoff_base * attempt
+                    print(f"  Retrying in {sleep_time}s...")
+                    time.sleep(sleep_time)
 
-            # Committing
-            print(f"Committing: {file_key}...")
-            r_commit = requests.post(
-                url_commit,
-                headers=self.headers,
-                verify=False
-            )
-            r_commit.raise_for_status()
+            # --- Commit, with retry/backoff ---
+            for attempt in range(1, max_retries + 1):
+                try:
+                    print(f"Committing: {file_key} (attempt {attempt}/{max_retries})...")
+                    r_commit = requests.post(
+                        url_commit,
+                        headers=self.headers,
+                        verify=False,
+                        timeout=timeout
+                    )
+                    r_commit.raise_for_status()
+                    break
+                except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+                    print(f"  Commit failed: {e}")
+                    if attempt == max_retries:
+                        raise
+                    sleep_time = backoff_base * attempt
+                    print(f"  Retrying in {sleep_time}s...")
+                    time.sleep(sleep_time)
+
             print(f"Finished: {file_key}")
 
     def publish_record(self, record_id):
