@@ -166,8 +166,8 @@ def get_record_metadata(fits_file,
           "wcs_equinox": fits_meta["wcs_equinox"],
           "wcs_projection": fits_meta["wcs_projection"],
           "refframe": "ICRS",
-          "datefirstobs": "06-12-2018",
-          "datelastobs": "09-10-2021",
+          "datefirstobs": "08-06-2019",
+          "datelastobs": "15-11-2019",
           "related_products": "TBD"
     },
         "contact:email": [
