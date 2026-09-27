@@ -1,8 +1,11 @@
 <p>
-In this data release, we present deep sub-arcsecond resolution images and source catalogues at 120–168 MHz covering a 2.5×2.5 square degree field of view centred on the Euclid Deep-Field North (EDFN) at 0.3″, 0.6″, and 1.2″.
+In this data release, we present deep sub-arcsecond resolution images and source catalogues at 120–168 MHz covering a 2.5×2.5 square degree field of view centred on the Euclid Deep-Field North (EDFN) at sub-arcsecond resolution.
 The data has been produced using 56 hours of LOFAR-HBA observations, including all international stations, obtained from 7 epochs. The data were processed using the automated calibration pipelines
 LINC, the DDF-pipeline, and PILOT, followed by imaging with WSClean to produce primary beam-corrected Stokes I images.
-We also release a multi-resolution source catalogue containing 37791 radio sources. This catalogue combines detections in the facet images across the different resolutions.
+</p>
+<p>
+The resulting mosaics have resolutions of 0.35″×0.41″, 0.58″×0.64″, and 1.1″×1.5″, with corresponding best sensitivities of 11.6 μJy beam⁻¹, 16.2 μJy beam⁻¹, and 28.2 μJy beam⁻¹, respectively.
+We also release a source catalogue containing 37791 radio sources. This catalogue combines detections in the facet images across the different resolutions.
 </p>
 <p>
 For scientific analysis, we recommend using the individual facet images rather than the full mosaic. Each facet covers a smaller region of the field and has its own angular resolution.
