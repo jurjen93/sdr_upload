@@ -220,35 +220,56 @@ class CreateCollection(UploadRecord):
     def __init__(self, BASE_URL=None, TOKEN_FILE=None):
         super().__init__(BASE_URL, TOKEN_FILE)
 
-    def create_collection(self, metadata, record_ids, description=None):
-        """Creates a collection record linking to existing record IDs."""
-        api_url = f"{self.BASE_URL}/api/records"
-
-        metadata = {
+    def _build_payload(self, metadata, record_ids, description=None):
+        """Build the full record body for a collection."""
+        payload = {
             "files": {"enabled": False},
-            "metadata": metadata,
+            "metadata": dict(metadata),  # copy, so the caller's dict isn't mutated
             "custom_fields": {
                 "collection:records": record_ids,
-            "contact:email": [
-                "jurjendejong@strw.leidenuniv.nl",
-                "jong@astron.nl"]
-            }
+                "contact:email": [
+                    "jurjendejong@strw.leidenuniv.nl",
+                    "jong@astron.nl"],
+            },
         }
 
         if description is not None:
             with open(description) as f:
-                description_text = f.read()
-            metadata["metadata"].update({"description": description_text.replace("\n", " ")})
+                payload["metadata"]["description"] = f.read().replace("\n", " ")
         else:
-            metadata["metadata"].update({"description": ""})
+            payload["metadata"]["description"] = ""
 
-        response = requests.post(api_url, headers=self.headers, json=metadata, verify=False)
+        return payload
+
+    def create_collection(self, metadata, record_ids, description=None):
+        """Creates a collection record linking to existing record IDs."""
+        payload = self._build_payload(metadata, record_ids, description)
+
+        response = requests.post(f"{self.BASE_URL}/api/records",
+                                 headers=self.headers, json=payload, verify=False)
 
         if response.status_code == 201:
             res = response.json()
-            print(f"Collection {metadata['metadata']['title']} created successfully!")
+            print(f"Collection {payload['metadata']['title']} created successfully!")
             print(f"ID: {res.get('id')}")
             return res
         else:
             print(f"Error {response.status_code}: {response.text}")
             return None
+
+    def new_collection_version(self, record_id, metadata, record_ids=None, description=None):
+        """
+        Create a new version of an existing published collection.
+        If record_ids is None, the record list of the previous version is kept.
+        """
+        draft = self.new_version(record_id)
+
+        if record_ids is None:
+            record_ids = draft.get("custom_fields", {}).get("collection:records", [])
+            print(f"Keeping {len(record_ids)} linked record(s) from previous version.")
+
+        payload = self._build_payload(metadata, record_ids, description)
+        updated = self.update_metadata(draft["id"], payload)
+
+        print(f"Collection version draft updated: {updated['id']}")
+        return updated
