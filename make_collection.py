@@ -19,17 +19,12 @@ def get_args():
 
     # Configuration
     parser.add_argument("--token", required=True, help="Path to SDR token file.")
-    parser.add_argument("--url", default="https://sdr-acc.repository.surf.nl",
-                        help="Base URL for the SDR instance.")
+    parser.add_argument("--url", default="https://sdr-acc.repository.surf.nl", help="Base URL for the SDR instance.")
 
     # Draft handling (mutually exclusive)
     mode = parser.add_mutually_exclusive_group()
-    mode.add_argument("--new-version-of", default=None,
-                      help="ID of a published collection (record or parent ID). Creates a new "
-                           "draft version of it; nothing is published.")
-    mode.add_argument("--update-draft", default=None,
-                      help="ID of an existing unpublished draft to overwrite "
-                           "(e.g. a new-version draft you created earlier).")
+    mode.add_argument("--new-version-of", default=None, help="ID of a published collection (record or parent ID).")
+    mode.add_argument("--update-draft", default=None, help="ID of an existing unpublished draft to overwrite.")
 
     args = parser.parse_args()
 
@@ -49,11 +44,9 @@ def main():
     SDRsesh = CreateCollection(args.url, args.token)
 
     if args.new_version_of:
-        SDRsesh.new_collection_version(args.new_version_of, metadata,
-                                       args.record_ids, args.description)
+        SDRsesh.new_collection_version(args.new_version_of, metadata, args.record_ids, args.description)
     elif args.update_draft:
-        SDRsesh.update_collection_draft(args.update_draft, metadata,
-                                        args.record_ids, args.description)
+        SDRsesh.update_collection_draft(args.update_draft, metadata, args.record_ids, args.description)
     else:
         SDRsesh.create_collection(metadata, args.record_ids, args.description)
 
