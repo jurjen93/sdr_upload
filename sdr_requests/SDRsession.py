@@ -54,6 +54,8 @@ class UploadRecord:
             headers=self.headers,
             verify=False
         )
+        if not r.ok:
+            print(f"Error {r.status_code}: {r.text}")
         r.raise_for_status()
 
         new_draft = r.json()
@@ -84,6 +86,8 @@ class UploadRecord:
             data=json.dumps(metadata),
             verify=False
         )
+        if not r.ok:
+            print(f"Error {r.status_code}: {r.text}")
         r.raise_for_status()
         return r.json()
 
@@ -217,19 +221,22 @@ class UploadRecord:
 
 
 class CreateCollection(UploadRecord):
+    CONTACT_EMAILS = [
+        "jurjendejong@strw.leidenuniv.nl",
+        "jong@astron.nl",
+    ]
+
     def __init__(self, BASE_URL=None, TOKEN_FILE=None):
         super().__init__(BASE_URL, TOKEN_FILE)
 
     def _build_payload(self, metadata, record_ids, description=None):
-        """Build the full record body for a collection."""
+        """Build the full record body for a collection draft."""
         payload = {
             "files": {"enabled": False},
             "metadata": dict(metadata),  # copy, so the caller's dict isn't mutated
             "custom_fields": {
                 "collection:records": record_ids,
-                "contact:email": [
-                    "jurjendejong@strw.leidenuniv.nl",
-                    "jong@astron.nl"],
+                "contact:email": list(self.CONTACT_EMAILS),
             },
         }
 
@@ -241,35 +248,138 @@ class CreateCollection(UploadRecord):
 
         return payload
 
+    def get_draft(self, record_id):
+        """Fetch an existing (unpublished) draft by ID."""
+        r = requests.get(
+            f"{self.BASE_URL}/api/records/{record_id}/draft",
+            headers=self.headers,
+            verify=False
+        )
+        if r.status_code != 200:
+            sys.exit(f"Draft {record_id} not found ({r.status_code}): {r.text}")
+        return r.json()
+
+    def latest_record_ids(self, record_ids):
+        """
+        Replace each record ID by the ID of its latest published version.
+        IDs that can't be resolved are kept as they are (with a warning).
+        """
+        resolved = []
+        for rid in record_ids:
+            r = requests.get(
+                f"{self.BASE_URL}/api/records/{rid}/versions/latest",
+                headers=self.headers,
+                verify=False
+            )
+            if r.status_code == 200:
+                latest_id = r.json()["id"]
+                if latest_id != rid:
+                    print(f"  {rid} -> {latest_id} (newer version)")
+                else:
+                    print(f"  {rid} is already the latest version")
+                resolved.append(latest_id)
+            else:
+                print(f"  WARNING: could not resolve {rid} ({r.status_code}), keeping it as is")
+                resolved.append(rid)
+        return resolved
+
+    def resolve_latest_published(self, record_id):
+        """
+        Return the latest published version for a record ID or a parent
+        (concept) ID. Exits with a clear message if nothing published is found.
+        """
+        r = requests.get(
+            f"{self.BASE_URL}/api/records/{record_id}/versions/latest",
+            headers=self.headers,
+            verify=False
+        )
+        if r.status_code == 200:
+            latest = r.json()
+            if latest["id"] != record_id:
+                print(f"Resolved {record_id} -> latest published version {latest['id']}")
+            return latest
+
+        r_draft = requests.get(
+            f"{self.BASE_URL}/api/records/{record_id}/draft",
+            headers=self.headers,
+            verify=False
+        )
+        if r_draft.status_code == 200:
+            sys.exit(f"{record_id} is an unpublished draft, not a published record. "
+                     f"Use --update-draft {record_id} instead.")
+
+        sys.exit(f"No published record found for {record_id} on {self.BASE_URL} "
+                 f"({r.status_code}): {r.text}\n"
+                 f"Check the ID, the instance (acc vs production) and that your token "
+                 f"belongs to the record owner.")
+
+    def new_collection_version(self, record_id, metadata, record_ids=None, description=None):
+        """
+        Create a new draft version of a published collection and fill it with
+        the given metadata. If record_ids is None, the linked records of the
+        latest published version are used. Every linked record is always
+        replaced by its latest published version. Nothing is published.
+        """
+        latest = self.resolve_latest_published(record_id)
+
+        if record_ids is None:
+            record_ids = latest.get("custom_fields", {}).get("collection:records", [])
+            print(f"Keeping {len(record_ids)} linked record(s) from the previous version.")
+
+        print("Resolving linked records to their latest versions...")
+        record_ids = self.latest_record_ids(record_ids)
+
+        draft = self.new_version(latest["id"])
+
+        payload = self._build_payload(metadata, record_ids, description)
+        updated = self.update_metadata(draft["id"], payload)
+
+        print(f"New collection version draft ready: {updated['id']} (not published)")
+        return updated
+
     def create_collection(self, metadata, record_ids, description=None):
-        """Creates a collection record linking to existing record IDs."""
+        """
+        Create a new collection draft linking to existing records.
+        Every record is replaced by its latest published version.
+        """
+        print("Resolving linked records to their latest versions...")
+        record_ids = self.latest_record_ids(record_ids)
+
         payload = self._build_payload(metadata, record_ids, description)
 
-        response = requests.post(f"{self.BASE_URL}/api/records",
-                                 headers=self.headers, json=payload, verify=False)
+        response = requests.post(
+            f"{self.BASE_URL}/api/records",
+            headers=self.headers,
+            json=payload,
+            verify=False
+        )
 
         if response.status_code == 201:
             res = response.json()
-            print(f"Collection {payload['metadata']['title']} created successfully!")
+            print(f"Collection draft '{payload['metadata']['title']}' created successfully!")
             print(f"ID: {res.get('id')}")
             return res
         else:
             print(f"Error {response.status_code}: {response.text}")
             return None
 
-    def new_collection_version(self, record_id, metadata, record_ids=None, description=None):
+    def update_collection_draft(self, record_id, metadata, record_ids=None, description=None):
         """
-        Create a new version of an existing published collection.
-        If record_ids is None, the record list of the previous version is kept.
+        Overwrite the metadata of an existing (unpublished) collection draft.
+        If record_ids is None, the linked records of the draft are used.
+        Every linked record is always replaced by its latest published version.
         """
-        draft = self.new_version(record_id)
+        draft = self.get_draft(record_id)
 
         if record_ids is None:
             record_ids = draft.get("custom_fields", {}).get("collection:records", [])
-            print(f"Keeping {len(record_ids)} linked record(s) from previous version.")
+            print(f"Keeping {len(record_ids)} linked record(s) from the existing draft.")
+
+        print("Resolving linked records to their latest versions...")
+        record_ids = self.latest_record_ids(record_ids)
 
         payload = self._build_payload(metadata, record_ids, description)
-        updated = self.update_metadata(draft["id"], payload)
+        updated = self.update_metadata(record_id, payload)
 
-        print(f"Collection version draft updated: {updated['id']}")
+        print(f"Collection draft {record_id} updated.")
         return updated
