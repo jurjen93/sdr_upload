@@ -18,6 +18,11 @@ def get_args():
     parser.add_argument("--token", required=True, help="Path to SDR token file.")
     parser.add_argument("--url", default="https://sdr-acc.repository.surf.nl", help="Base URL for the SDR instance.")
 
+    # Versioning
+    parser.add_argument("--new-version-of", default=None,
+                        help="Record ID of an existing published record. If given, creates a new version "
+                             "of that record instead of a brand new record.")
+
     # Actions
     # parser.add_argument("--add-pid", action="store_true", help="Reserve a DOI for the record.")
     # parser.add_argument("--publish", action="store_true", help="Publish the record (Draft -> Public).")
@@ -34,7 +39,15 @@ def main():
 
     metadata = collection_metadata(args.title, args.authors, args.funding)
     SDRsesh = CreateCollection(args.url, args.token)
-    SDRsesh.create(metadata, args.record_ids, args.description)
+    if args.new_version_of:
+        record = SDRsesh.new_version(args.new_version_of)
+
+        payload = dict(metadata)
+        payload["files"] = {"enabled": record["files"]["enabled"]}
+
+        SDRsesh.update_metadata(record["id"], payload)
+    else:
+        SDRsesh.create_collection(metadata, args.record_ids, args.description)
 
 if __name__ == "__main__":
     main()

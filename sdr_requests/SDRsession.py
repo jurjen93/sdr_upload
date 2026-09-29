@@ -220,7 +220,7 @@ class CreateCollection(UploadRecord):
     def __init__(self, BASE_URL=None, TOKEN_FILE=None):
         super().__init__(BASE_URL, TOKEN_FILE)
 
-    def create(self, metadata, record_ids, description=None):
+    def create_collection(self, metadata, record_ids, description=None):
         """Creates a collection record linking to existing record IDs."""
         api_url = f"{self.BASE_URL}/api/records"
 
